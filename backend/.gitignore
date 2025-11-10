@@ -1,0 +1,18 @@
+ni .gitignore -Force -Value @"
+# Python / VS Code
+__pycache__/
+*.pyc
+.vscode/
+.venv/
+env/
+venv/
+
+# Archivos locales / secretos
+*.env
+*.env.*
+.envrc
+
+# SO
+Thumbs.db
+.DS_Store
+"@
