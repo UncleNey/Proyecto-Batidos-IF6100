@@ -1,0 +1,34 @@
+### Obtener todos los batidos
+GET http://localhost:8000/batidos
+Accept: application/json
+
+### Guardar mensaje de contacto
+POST http://localhost:8000/contacto
+Content-Type: application/json
+Accept: application/json
+
+{
+  "nombre": "Juan Pérez",
+  "correo": "juanperez@email.com",
+  "mensaje": "Hola, quiero más información sobre los batidos verdes."
+}
+
+### Obtener información de contacto del negocio
+GET http://localhost:8000/contacto/info
+Accept: application/json
+
+### Obtener todas las categorías
+GET http://localhost:8000/categorias
+Accept: application/json
+
+### Obtener todas las etiquetas
+GET http://localhost:8000/etiquetas
+Accept: application/json
+
+### Obtener toda la repostería
+GET http://localhost:8000/reposteria
+Accept: application/json
+
+### Obtener todos los utensilios
+GET http://localhost:8000/utensilios
+Accept: application/json
