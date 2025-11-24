@@ -1,0 +1,40 @@
+<div class="detalle-container" *ngIf="batido">
+  <button class="btn-volver" (click)="volver()">← Volver</button>
+
+  <div class="detalle-content">
+    <div class="imagen-section">
+      <img [src]="batido.imagen || 'assets/placeholder.png'" [alt]="batido.nombre" class="batido-imagen">
+    </div>
+
+    <div class="info-section">
+      <h1>{{ batido.nombre }}</h1>
+      <p class="descripcion">{{ batido.descripcion }}</p>
+
+      <div class="specs">
+        <div class="spec" *ngIf="batido.precio">
+          <span class="label">Precio:</span>
+          <span class="value">${{ batido.precio }}</span>
+        </div>
+        <div class="spec" *ngIf="batido.tiempo_min">
+          <span class="label">⏱️ Tiempo:</span>
+          <span class="value">{{ batido.tiempo_min }} min</span>
+        </div>
+        <div class="spec" *ngIf="batido.porciones">
+          <span class="label">🍲 Porciones:</span>
+          <span class="value">{{ batido.porciones }}</span>
+        </div>
+      </div>
+
+      <div class="preparacion" *ngIf="batido.preparacion">
+        <h3>Preparación</h3>
+        <p>{{ batido.preparacion }}</p>
+      </div>
+
+      <button class="btn-comprar" (click)="agregarAlCarrito()">🛒 Agregar al carrito</button>
+    </div>
+  </div>
+</div>
+
+<div class="loading" *ngIf="cargando">
+  <div class="spinner"></div>
+</div>

@@ -1,0 +1,94 @@
+$color-dark: #0a1628;
+$color-primary: #00a8e8;
+$color-primary-light: #00d4ff;
+$color-text: #e0e0e0;
+$color-text-muted: #a0a0a0;
+$border-color: #1a2f4a;
+
+.reposteria-container {
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  h2 {
+    font-size: 2rem;
+    color: $color-primary-light;
+    margin-bottom: 40px;
+  }
+}
+
+.reposteria-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  
+  .producto-card {
+    background: linear-gradient(135deg, rgba(0, 168, 232, 0.1) 0%, rgba(15, 31, 53, 0.8) 100%);
+    border: 2px solid $border-color;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+      border-color: $color-primary;
+      box-shadow: 0 20px 50px rgba(0, 168, 232, 0.2);
+      transform: translateY(-5px);
+    }
+
+    .card-image {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+    }
+
+    .card-content {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.25rem;
+        color: $color-primary-light;
+      }
+
+      .description {
+        font-size: 0.9rem;
+        color: $color-text-muted;
+        margin: 0 0 10px 0;
+        flex-grow: 1;
+      }
+
+      .precio {
+        font-size: 1.2rem;
+        color: $color-primary;
+        font-weight: 700;
+        margin: 0 0 15px 0;
+      }
+
+      .btn-comprar {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: scale(1.05);
+          box-shadow: 0 10px 25px rgba(0, 168, 232, 0.4);
+        }
+      }
+    }
+  }
+}

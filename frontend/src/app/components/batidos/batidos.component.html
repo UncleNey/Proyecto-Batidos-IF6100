@@ -1,0 +1,31 @@
+<div class="batidos-container">
+  <!-- Filtros de frutas -->
+  <div class="filtros">
+    <button class="filtro-btn" [class.active]="filtroActivo === 'todos'" (click)="filtrarPorFruta('todos')">
+      Todos
+    </button>
+    <button *ngFor="let fruta of frutas" class="filtro-btn" [class.active]="filtroActivo === fruta.id" (click)="filtrarPorFruta(fruta.id)">
+      <span class="emoji">{{ fruta.emoji }}</span>
+      {{ fruta.nombre }}
+    </button>
+  </div>
+
+  <!-- Grid de batidos -->
+  <div class="batidos-grid">
+    <div *ngFor="let batido of batidosFiltrados" class="batido-card">
+      <div class="card-image">
+        <img [src]="batido.imagen || 'assets/placeholder.png'" [alt]="batido.nombre">
+      </div>
+      <div class="card-content">
+        <h3>{{ batido.nombre }}</h3>
+        <p class="description">{{ batido.descripcion }}</p>
+        <p class="precio" *ngIf="batido.precio">${{ batido.precio }}</p>
+        <button class="btn-detail" (click)="verDetalle(batido)">Ver detalle</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+  </div>
+</div>

@@ -1,0 +1,159 @@
+$color-dark: #0a1628;
+$color-primary: #00a8e8;
+$color-primary-light: #00d4ff;
+$color-text: #e0e0e0;
+$color-text-muted: #a0a0a0;
+$border-color: #1a2f4a;
+
+.batidos-container {
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.filtros {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  
+  .filtro-btn {
+    padding: 12px 24px;
+    border: 2px solid $border-color;
+    background: rgba(0, 168, 232, 0.1);
+    color: $color-primary-light;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .emoji {
+      font-size: 1.5rem;
+    }
+
+    &:hover {
+      background: $color-primary;
+      color: white;
+      border-color: $color-primary;
+    }
+
+    &.active {
+      background: $color-primary;
+      color: white;
+      border-color: $color-primary;
+      box-shadow: 0 0 15px rgba(0, 168, 232, 0.5);
+    }
+  }
+}
+
+.batidos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  
+  .batido-card {
+    background: linear-gradient(135deg, rgba(0, 168, 232, 0.1) 0%, rgba(15, 31, 53, 0.8) 100%);
+    border: 2px solid $border-color;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+      border-color: $color-primary;
+      box-shadow: 0 20px 50px rgba(0, 168, 232, 0.2);
+      transform: translateY(-5px);
+    }
+
+    .card-image {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .card-content {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.25rem;
+        color: $color-primary-light;
+      }
+
+      .description {
+        font-size: 0.9rem;
+        color: $color-text-muted;
+        margin: 0 0 10px 0;
+        flex-grow: 1;
+      }
+
+      .precio {
+        font-size: 1.2rem;
+        color: $color-primary;
+        font-weight: 700;
+        margin: 0 0 15px 0;
+      }
+
+      .btn-detail {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: scale(1.05);
+          box-shadow: 0 10px 25px rgba(0, 168, 232, 0.4);
+        }
+      }
+    }
+  }
+}
+
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 22, 40, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(0, 168, 232, 0.2);
+    border-top: 4px solid $color-primary;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

@@ -1,0 +1,23 @@
+﻿<div class="container-main">
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-icon">🥤</div>
+      <span class="header-title">Principal</span>
+    </div>
+    
+    <nav class="nav-buttons">
+      <button class="nav-btn" [class.active]="seccionActiva === 'principal'" (click)="seleccionarSeccion('')">Principal</button>
+      <button class="nav-btn" [class.active]="seccionActiva === 'batidos'" (click)="seleccionarSeccion('batidos')">Batidos</button>
+      <button class="nav-btn" [class.active]="seccionActiva === 'reposteria'" (click)="seleccionarSeccion('reposteria')">Repostería</button>
+      <button class="nav-btn" [class.active]="seccionActiva === 'ubicacion'" (click)="seleccionarSeccion('ubicacion')">Ubicación</button>
+    </nav>
+
+    <button class="logout-btn" (click)="cerrarSesion()">Cerrar sesión</button>
+  </header>
+
+  <router-outlet></router-outlet>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+  </div>
+</div>
