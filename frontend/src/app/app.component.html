@@ -6,18 +6,177 @@
     </div>
     
     <nav class="nav-buttons">
-      <button class="nav-btn" [class.active]="seccionActiva === 'principal'" (click)="seleccionarSeccion('')">Principal</button>
       <button class="nav-btn" [class.active]="seccionActiva === 'batidos'" (click)="seleccionarSeccion('batidos')">Batidos</button>
       <button class="nav-btn" [class.active]="seccionActiva === 'reposteria'" (click)="seleccionarSeccion('reposteria')">Repostería</button>
       <button class="nav-btn" [class.active]="seccionActiva === 'ubicacion'" (click)="seleccionarSeccion('ubicacion')">Ubicación</button>
     </nav>
 
-    <button class="logout-btn" (click)="cerrarSesion()">Cerrar sesión</button>
+    <button class="logout-btn" (click)="usuarioLogueado ? cerrarSesion() : seleccionarSeccion('login')">
+      {{ usuarioLogueado ? 'Cerrar sesión' : 'Iniciar sesión' }}
+    </button>
   </header>
 
-  <router-outlet></router-outlet>
+  <!-- PRINCIPAL -->
+  <div class="productos-container" *ngIf="seccionActiva === 'principal'">
+    <div class="producto-card" *ngFor="let producto of productos">
+      <div class="producto-imagen">{{ producto.emoji }}</div>
+      <div class="producto-info">
+        <h3>{{ producto.nombre }} {{ producto.emoji }}</h3>
+        <p>{{ producto.descripcion }}</p>
+        <button class="detail-btn" (click)="verDetalle(producto.id)">Ver detalle</button>
+      </div>
+    </div>
+  </div>
 
-  <div class="loading" *ngIf="cargando">
-    <div class="spinner"></div>
+  <!-- UBICACIÓN -->
+  <div class="ubicacion-container" *ngIf="seccionActiva === 'ubicacion'">
+    <div class="mapa-container">
+      <div class="mapa-placeholder">
+        <div class="mapa-content">
+          <div class="location-icon">📍</div>
+          <p class="mapa-text">Te esperamos en</p>
+          <p class="direccion-text">En el gimnasio Yunis Fitness, 25 metros norte de Correos de Costa Rica</p>
+        </div>
+      </div>
+    </div>
+    <div class="direccion-info">
+      <h3>📍 Nuestra Ubicación</h3>
+      <p>Te esperamos en</p>
+      <p class="ubicacion-completa">En el gimnasio Yunis Fitness, 25 metros norte de Correos de Costa Rica</p>
+      <button class="volver-btn" (click)="seleccionarSeccion('principal')">Volver</button>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="login-container" *ngIf="seccionActiva === 'login'">
+    <div class="login-card" *ngIf="!mostrarRegistro">
+      <h2>Iniciar sesión</h2>
+      <form (ngSubmit)="iniciarSesion()">
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+          <input type="email" id="email" [(ngModel)]="loginForm.email" name="email" placeholder="tu@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" [(ngModel)]="loginForm.password" name="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-submit">Iniciar sesión</button>
+        <p class="toggle-form">¿No tienes cuenta? <a (click)="toggleRegistro()">Regístrate aquí</a></p>
+      </form>
+    </div>
+
+    <div class="login-card" *ngIf="mostrarRegistro">
+      <h2>Crear cuenta</h2>
+      <form (ngSubmit)="registrarse()">
+        <div class="form-group">
+          <label for="nombre">Nombre completo</label>
+          <input type="text" id="nombre" [(ngModel)]="registroForm.nombre" name="nombre" placeholder="Tu nombre" required>
+        </div>
+        <div class="form-group">
+          <label for="email-reg">Correo electrónico</label>
+          <input type="email" id="email-reg" [(ngModel)]="registroForm.email" name="email" placeholder="tu@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="password-reg">Contraseña</label>
+          <input type="password" id="password-reg" [(ngModel)]="registroForm.password" name="password" placeholder="••••••••" required>
+        </div>
+        <div class="form-group">
+          <label for="telefono">Teléfono</label>
+          <input type="tel" id="telefono" [(ngModel)]="registroForm.telefono" name="telefono" placeholder="Tu teléfono" required>
+        </div>
+        <button type="submit" class="btn-submit">Registrarse</button>
+        <p class="toggle-form">¿Ya tienes cuenta? <a (click)="toggleRegistro()">Inicia sesión aquí</a></p>
+      </form>
+    </div>
+
+    <button class="btn-volver" (click)="seleccionarSeccion('principal')">Volver</button>
+  </div>
+
+  <!-- BATIDOS -->
+  <div class="batidos-container" *ngIf="seccionActiva === 'batidos'">
+    <div class="batidos-panel">
+      <div class="batidos-imagen">
+        <span class="emoji-grande">🥤</span>
+      </div>
+    </div>
+
+    <div class="frutas-grid">
+      <button 
+        *ngFor="let fruta of frutas"
+        class="fruta-btn"
+        [class.activa]="frutaSeleccionada.id === fruta.id"
+        (click)="seleccionarFruta(fruta)">
+        <span class="fruta-emoji">{{ fruta.emoji }}</span>
+        <span class="fruta-nombre">{{ fruta.nombre }}</span>
+      </button>
+    </div>
+
+    <button class="btn-volver-grid" (click)="seleccionarSeccion('principal')">Volver</button>
+  </div>
+
+  <!-- REPOSTERÍA -->
+  <div class="reposteria-container" *ngIf="seccionActiva === 'reposteria'">
+    <div class="reposteria-panel">
+      <div class="reposteria-imagen">
+        <span class="emoji-grande">🍰</span>
+      </div>
+    </div>
+
+    <div class="postres-grid">
+      <button 
+        *ngFor="let postre of postres"
+        class="postre-btn"
+        [class.activa]="postreSeleccionado.id === postre.id"
+        (click)="seleccionarPostre(postre)">
+        <span class="postre-emoji">{{ postre.emoji }}</span>
+        <span class="postre-nombre">{{ postre.nombre }}</span>
+      </button>
+    </div>
+
+    <button class="btn-volver-grid" (click)="seleccionarSeccion('principal')">Volver</button>
+  </div>
+
+  <!-- DETALLE BATIDOS -->
+  <div class="detalle-container" *ngIf="seccionActiva === 'detalle-batidos'">
+    <div class="detalle-header">
+      <h2>Batidos con {{ ingredienteSeleccionado.nombre }} {{ ingredienteSeleccionado.emoji }}</h2>
+      <button class="btn-volver-detalle" (click)="volverAProductos()">← Volver</button>
+    </div>
+    
+    <div class="productos-grid-detalle">
+      <div class="producto-detalle-card" *ngFor="let producto of productosIngrediente">
+        <div class="producto-imagen-detalle">{{ producto.imagen }}</div>
+        <div class="producto-info-detalle">
+          <h3>{{ producto.nombre }}</h3>
+          <p>{{ producto.descripcion }}</p>
+          <div class="producto-footer">
+            <span class="precio">${{ producto.precio }}</span>
+            <button class="btn-detalle">Ver detalle</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETALLE REPOSTERÍA -->
+  <div class="detalle-container" *ngIf="seccionActiva === 'detalle-reposteria'">
+    <div class="detalle-header">
+      <h2>Repostería con {{ ingredienteSeleccionado.nombre }} {{ ingredienteSeleccionado.emoji }}</h2>
+      <button class="btn-volver-detalle" (click)="volverAProductos()">← Volver</button>
+    </div>
+    
+    <div class="productos-grid-detalle">
+      <div class="producto-detalle-card" *ngFor="let producto of productosIngrediente">
+        <div class="producto-imagen-detalle">{{ producto.imagen }}</div>
+        <div class="producto-info-detalle">
+          <h3>{{ producto.nombre }}</h3>
+          <p>{{ producto.descripcion }}</p>
+          <div class="producto-footer">
+            <span class="precio">${{ producto.precio }}</span>
+            <button class="btn-detalle">Ver detalle</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

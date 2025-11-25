@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@angular/google-maps": "^21.0.0",
     "zone.js": "^0.16.0"
   }
 }
