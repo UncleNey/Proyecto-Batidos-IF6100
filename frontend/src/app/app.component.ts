@@ -183,6 +183,37 @@ export class AppComponent implements OnInit {
     this.cargarProductosPorFruta(fruta);
   }
 
+  batidosLista: any[] = [];
+  repoteriaLista: any[] = [];
+
+  cargarBatidosCompleto() {
+    this.http.get('http://127.0.0.1:5000/api/batidos').subscribe(
+      (data: any) => {
+        this.batidosLista = data;
+        this.seccionActiva = 'lista-batidos';
+      },
+      (error: any) => {
+        console.error('Error al cargar batidos:', error);
+        this.batidosLista = [];
+        this.seccionActiva = 'lista-batidos';
+      }
+    );
+  }
+
+  cargarReposteriaCompleto() {
+    this.http.get('http://127.0.0.1:5000/api/reposteria').subscribe(
+      (data: any) => {
+        this.repoteriaLista = data;
+        this.seccionActiva = 'lista-reposteria';
+      },
+      (error: any) => {
+        console.error('Error al cargar repostería:', error);
+        this.repoteriaLista = [];
+        this.seccionActiva = 'lista-reposteria';
+      }
+    );
+  }
+
   postres: Postre[] = [
     { id: 1, nombre: 'Chocolate', emoji: '🍫', descripcion: 'Torta de chocolate suave y húmeda' },
     { id: 2, nombre: 'Vainilla', emoji: '🧁', descripcion: 'Cupcake de vainilla clásico' },
