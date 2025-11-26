@@ -357,9 +357,17 @@ def registro():
         c = conn.cursor()
         
         try:
+            # Guardar en tabla usuarios (para autenticación)
             c.execute('''INSERT INTO usuarios (nombre, email, password, telefono)
                         VALUES (?, ?, ?, ?)''',
                      (nombre, email, password_hash, telefono))
+            
+            # Guardar también en tabla contacto (como solicitó el usuario)
+            mensaje_registro = f'Registro de nuevo usuario: {nombre}'
+            c.execute('''INSERT INTO contacto (nombre, correo, telefono, mensaje)
+                        VALUES (?, ?, ?, ?)''',
+                     (nombre, email, telefono, mensaje_registro))
+            
             conn.commit()
             conn.close()
             
