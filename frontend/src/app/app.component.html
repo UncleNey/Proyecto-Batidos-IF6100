@@ -28,6 +28,42 @@
     </div>
   </div>
 
+  <!-- DETALLE PRODUCTO PRINCIPAL -->
+  <div class="detalle-producto-container" *ngIf="seccionActiva === 'detalle-producto-principal'">
+    <div class="detalle-producto-header">
+      <button class="btn-volver-detalle-producto" (click)="volverAProductosPrincipal()">← Volver</button>
+      <h2>{{ productoDetalleActual.nombre }}</h2>
+    </div>
+    
+    <div class="detalle-producto-content">
+      <div class="detalle-imagen-grande">
+        <span class="emoji-detalle">{{ productoDetalleActual.emoji }}</span>
+      </div>
+      
+      <div class="detalle-info">
+        <h3>{{ productoDetalleActual.tipo }}</h3>
+        <div class="detalle-seccion">
+          <h4>Descripción</h4>
+          <p>{{ productoDetalleActual.detalleCompleto }}</p>
+        </div>
+        
+        <div class="detalle-seccion">
+          <h4>Ingredientes</h4>
+          <div class="ingredientes-list">
+            <span class="ingrediente" *ngFor="let ing of productoDetalleActual.ingredientes">
+              {{ ing }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="detalle-seccion">
+          <h4>Precio</h4>
+          <p class="precio-grande">${{ productoDetalleActual.precio }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- UBICACIÓN -->
   <div class="ubicacion-container" *ngIf="seccionActiva === 'ubicacion'">
     <div class="mapa-container">
