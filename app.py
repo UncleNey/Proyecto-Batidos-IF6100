@@ -91,20 +91,18 @@ def hash_password(password):
 def get_batidos():
     """Obtiene todos los batidos"""
     try:
-        conn = get_db_connection()
-        if not conn:
-            return jsonify({'error': 'No hay conexión a la BD'}), 500
-        
-        cursor = conn.cursor()
-        cursor.execute('SELECT TOP 10 id, nombre, descripcion_corta, imagen_url, precio FROM batido ORDER BY fecha_publicacion DESC')
+        conn = get_db()
+        c = conn.cursor()
+        c.execute('SELECT id, nombre, descripcion, precio, categoria, ingredientes FROM batidos ORDER BY nombre')
         batidos = []
-        for row in cursor.fetchall():
+        for row in c.fetchall():
             batidos.append({
                 'id': row[0],
                 'nombre': row[1],
                 'descripcion': row[2],
-                'imagen': row[3],
-                'precio': float(row[4]) if row[4] else 0
+                'precio': float(row[3]) if row[3] else 0,
+                'categoria': row[4],
+                'ingredientes': row[5].split(',') if row[5] else []
             })
         conn.close()
         return jsonify(batidos)
@@ -115,21 +113,17 @@ def get_batidos():
 def get_batido_mas_vendido():
     """Obtiene el batido más vendido (simulado)"""
     try:
-        conn = get_db_connection()
-        if not conn:
-            return jsonify({'error': 'No hay conexión a la BD'}), 500
-        
-        cursor = conn.cursor()
-        cursor.execute('SELECT TOP 1 id, nombre, descripcion_corta, imagen_url FROM batido ORDER BY id DESC')
-        row = cursor.fetchone()
+        conn = get_db()
+        c = conn.cursor()
+        c.execute('SELECT id, nombre, descripcion FROM batidos ORDER BY id DESC LIMIT 1')
+        row = c.fetchone()
         conn.close()
         
         if row:
             return jsonify({
                 'id': row[0],
                 'nombre': row[1],
-                'descripcion': row[2],
-                'imagen': row[3]
+                'descripcion': row[2]
             })
         return jsonify({'error': 'No hay batidos'}), 404
     except Exception as e:
@@ -139,19 +133,16 @@ def get_batido_mas_vendido():
 def get_reposteria():
     """Obtiene todos los productos de repostería"""
     try:
-        conn = get_db_connection()
-        if not conn:
-            return jsonify({'error': 'No hay conexión a la BD'}), 500
-        
-        cursor = conn.cursor()
-        cursor.execute('SELECT TOP 10 id, nombre, descripcion, precio FROM reposteria')
+        conn = get_db()
+        c = conn.cursor()
+        c.execute("SELECT id, nombre, descripcion, emoji FROM productos WHERE tipo = 'reposteria'")
         reposteria = []
-        for row in cursor.fetchall():
+        for row in c.fetchall():
             reposteria.append({
                 'id': row[0],
                 'nombre': row[1],
                 'descripcion': row[2],
-                'precio': float(row[3]) if row[3] else 0
+                'emoji': row[3]
             })
         conn.close()
         return jsonify(reposteria)
@@ -162,21 +153,17 @@ def get_reposteria():
 def get_reposteria_mas_vendida():
     """Obtiene el producto de repostería más vendido"""
     try:
-        conn = get_db_connection()
-        if not conn:
-            return jsonify({'error': 'No hay conexión a la BD'}), 500
-        
-        cursor = conn.cursor()
-        cursor.execute('SELECT TOP 1 id, nombre, descripcion, precio FROM reposteria')
-        row = cursor.fetchone()
+        conn = get_db()
+        c = conn.cursor()
+        c.execute("SELECT id, nombre, descripcion FROM productos WHERE tipo = 'reposteria' LIMIT 1")
+        row = c.fetchone()
         conn.close()
         
         if row:
             return jsonify({
                 'id': row[0],
                 'nombre': row[1],
-                'descripcion': row[2],
-                'precio': float(row[3]) if row[3] else 0
+                'descripcion': row[2]
             })
         return jsonify({'error': 'No hay repostería'}), 404
     except Exception as e:
@@ -186,13 +173,10 @@ def get_reposteria_mas_vendida():
 def get_categorias():
     """Obtiene todas las categorías"""
     try:
-        conn = get_db_connection()
-        if not conn:
-            return jsonify({'error': 'No hay conexión a la BD'}), 500
-        
-        cursor = conn.cursor()
-        cursor.execute('SELECT id, nombre FROM categoria')
-        categorias = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]
+        conn = get_db()
+        c = conn.cursor()
+        c.execute("SELECT DISTINCT categoria FROM batidos ORDER BY categoria")
+        categorias = [{'id': i+1, 'nombre': row[0]} for i, row in enumerate(c.fetchall())]
         conn.close()
         return jsonify(categorias)
     except Exception as e:
