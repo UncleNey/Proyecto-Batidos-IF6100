@@ -175,7 +175,7 @@ def get_categorias():
     try:
         conn = get_db()
         c = conn.cursor()
-        c.execute("SELECT DISTINCT categoria FROM batidos")
+        c.execute("SELECT DISTINCT categoria FROM batidos ORDER BY categoria")
         categorias = [{'id': i+1, 'nombre': row[0]} for i, row in enumerate(c.fetchall())]
         conn.close()
         return jsonify(categorias)
