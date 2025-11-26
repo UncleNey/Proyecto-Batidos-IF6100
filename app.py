@@ -368,8 +368,8 @@ def registro():
                         VALUES (?, ?, ?, ?)''',
                      (nombre, email, telefono, mensaje_registro))
             
+            # Commit solo si ambas operaciones tuvieron éxito
             conn.commit()
-            conn.close()
             
             return jsonify({
                 'mensaje': 'Registro exitoso',
@@ -379,9 +379,17 @@ def registro():
                     'telefono': telefono
                 }
             }), 201
-        except sqlite3.IntegrityError:
-            conn.close()
+        except sqlite3.IntegrityError as e:
+            # Rollback en caso de error
+            conn.rollback()
             return jsonify({'error': 'El email ya está registrado'}), 409
+        except Exception as e:
+            # Rollback para cualquier otro error
+            conn.rollback()
+            return jsonify({'error': f'Error al registrar: {str(e)}'}), 500
+        finally:
+            # Asegurar que la conexión se cierre siempre
+            conn.close()
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500
