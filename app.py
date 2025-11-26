@@ -20,6 +20,43 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
+def get_db_connection():
+    """
+    Intenta conectar a SQL Server, si falla usa SQLite como fallback
+    """
+    try:
+        # Intentar conexión SQL Server
+        SERVER = os.getenv("SQLSERVER_HOST", "localhost").strip()
+        DATABASE_SQL = os.getenv("SQLSERVER_DB", "batidos").strip()
+        AUTH = os.getenv("SQLSERVER_AUTH", "windows").strip().lower()
+        DRIVER = os.getenv("SQLSERVER_DRIVER", "ODBC Driver 17 for SQL Server").strip()
+        ENCRYPT = os.getenv("SQLSERVER_ENCRYPT", "yes").strip()
+        TRUST = os.getenv("SQLSERVER_TRUST_SERVER_CERT", "yes").strip()
+        
+        conn_str_parts = [
+            f"DRIVER={{{DRIVER}}}",
+            f"SERVER={SERVER}",
+            f"DATABASE={DATABASE_SQL}",
+            f"Encrypt={ENCRYPT}",
+            f"TrustServerCertificate={TRUST}"
+        ]
+        
+        if AUTH == "windows":
+            conn_str_parts.append("Trusted_Connection=yes")
+        else:
+            USERNAME = os.getenv("SQLSERVER_USER", "").strip()
+            PASSWORD = os.getenv("SQLSERVER_PASSWORD", "").strip()
+            conn_str_parts.append(f"UID={USERNAME}")
+            conn_str_parts.append(f"PWD={PASSWORD}")
+        
+        conn_str = ";".join(conn_str_parts)
+        conn = pyodbc.connect(conn_str, timeout=5)
+        return conn
+    except Exception as e:
+        # Si falla SQL Server, usar SQLite como fallback
+        # En producción, considerar usar logging module
+        return None
+
 def init_db():
     conn = get_db()
     c = conn.cursor()
@@ -92,22 +129,37 @@ def get_batidos():
     """Obtiene todos los batidos"""
     try:
         conn = get_db_connection()
-        if not conn:
-            return jsonify({'error': 'No hay conexión a la BD'}), 500
-        
-        cursor = conn.cursor()
-        cursor.execute('SELECT TOP 10 id, nombre, descripcion_corta, imagen_url, precio FROM batido ORDER BY fecha_publicacion DESC')
-        batidos = []
-        for row in cursor.fetchall():
-            batidos.append({
-                'id': row[0],
-                'nombre': row[1],
-                'descripcion': row[2],
-                'imagen': row[3],
-                'precio': float(row[4]) if row[4] else 0
-            })
-        conn.close()
-        return jsonify(batidos)
+        if conn:
+            # Usar SQL Server
+            cursor = conn.cursor()
+            cursor.execute('SELECT TOP 10 id, nombre, descripcion_corta, imagen_url, precio FROM batido ORDER BY fecha_publicacion DESC')
+            batidos = []
+            for row in cursor.fetchall():
+                batidos.append({
+                    'id': row[0],
+                    'nombre': row[1],
+                    'descripcion': row[2],
+                    'imagen': row[3],
+                    'precio': float(row[4]) if row[4] else 0
+                })
+            conn.close()
+            return jsonify(batidos)
+        else:
+            # Usar SQLite como fallback
+            conn = get_db()
+            c = conn.cursor()
+            c.execute('SELECT id, nombre, descripcion, precio, ingredientes FROM batidos ORDER BY created_at DESC LIMIT 10')
+            batidos = []
+            for row in c.fetchall():
+                batidos.append({
+                    'id': row[0],
+                    'nombre': row[1],
+                    'descripcion': row[2],
+                    'imagen': 'assets/placeholder.png',  # SQLite no tiene imagen_url
+                    'precio': float(row[3]) if row[3] else 0
+                })
+            conn.close()
+            return jsonify(batidos)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -116,22 +168,37 @@ def get_batido_mas_vendido():
     """Obtiene el batido más vendido (simulado)"""
     try:
         conn = get_db_connection()
-        if not conn:
-            return jsonify({'error': 'No hay conexión a la BD'}), 500
-        
-        cursor = conn.cursor()
-        cursor.execute('SELECT TOP 1 id, nombre, descripcion_corta, imagen_url FROM batido ORDER BY id DESC')
-        row = cursor.fetchone()
-        conn.close()
-        
-        if row:
-            return jsonify({
-                'id': row[0],
-                'nombre': row[1],
-                'descripcion': row[2],
-                'imagen': row[3]
-            })
-        return jsonify({'error': 'No hay batidos'}), 404
+        if conn:
+            # Usar SQL Server
+            cursor = conn.cursor()
+            cursor.execute('SELECT TOP 1 id, nombre, descripcion_corta, imagen_url FROM batido ORDER BY id DESC')
+            row = cursor.fetchone()
+            conn.close()
+            
+            if row:
+                return jsonify({
+                    'id': row[0],
+                    'nombre': row[1],
+                    'descripcion': row[2],
+                    'imagen': row[3]
+                })
+            return jsonify({'error': 'No hay batidos'}), 404
+        else:
+            # Usar SQLite como fallback
+            conn = get_db()
+            c = conn.cursor()
+            c.execute('SELECT id, nombre, descripcion FROM batidos ORDER BY id DESC LIMIT 1')
+            row = c.fetchone()
+            conn.close()
+            
+            if row:
+                return jsonify({
+                    'id': row[0],
+                    'nombre': row[1],
+                    'descripcion': row[2],
+                    'imagen': 'assets/placeholder.png'
+                })
+            return jsonify({'error': 'No hay batidos'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -140,21 +207,35 @@ def get_reposteria():
     """Obtiene todos los productos de repostería"""
     try:
         conn = get_db_connection()
-        if not conn:
-            return jsonify({'error': 'No hay conexión a la BD'}), 500
-        
-        cursor = conn.cursor()
-        cursor.execute('SELECT TOP 10 id, nombre, descripcion, precio FROM reposteria')
-        reposteria = []
-        for row in cursor.fetchall():
-            reposteria.append({
-                'id': row[0],
-                'nombre': row[1],
-                'descripcion': row[2],
-                'precio': float(row[3]) if row[3] else 0
-            })
-        conn.close()
-        return jsonify(reposteria)
+        if conn:
+            # Usar SQL Server
+            cursor = conn.cursor()
+            cursor.execute('SELECT TOP 10 id, nombre, descripcion, precio FROM reposteria')
+            reposteria = []
+            for row in cursor.fetchall():
+                reposteria.append({
+                    'id': row[0],
+                    'nombre': row[1],
+                    'descripcion': row[2],
+                    'precio': float(row[3]) if row[3] else 0
+                })
+            conn.close()
+            return jsonify(reposteria)
+        else:
+            # Usar SQLite como fallback
+            conn = get_db()
+            c = conn.cursor()
+            c.execute('SELECT id, nombre, descripcion, precio FROM reposteria ORDER BY created_at DESC LIMIT 10')
+            reposteria = []
+            for row in c.fetchall():
+                reposteria.append({
+                    'id': row[0],
+                    'nombre': row[1],
+                    'descripcion': row[2],
+                    'precio': float(row[3]) if row[3] else 0
+                })
+            conn.close()
+            return jsonify(reposteria)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -163,22 +244,37 @@ def get_reposteria_mas_vendida():
     """Obtiene el producto de repostería más vendido"""
     try:
         conn = get_db_connection()
-        if not conn:
-            return jsonify({'error': 'No hay conexión a la BD'}), 500
-        
-        cursor = conn.cursor()
-        cursor.execute('SELECT TOP 1 id, nombre, descripcion, precio FROM reposteria')
-        row = cursor.fetchone()
-        conn.close()
-        
-        if row:
-            return jsonify({
-                'id': row[0],
-                'nombre': row[1],
-                'descripcion': row[2],
-                'precio': float(row[3]) if row[3] else 0
-            })
-        return jsonify({'error': 'No hay repostería'}), 404
+        if conn:
+            # Usar SQL Server
+            cursor = conn.cursor()
+            cursor.execute('SELECT TOP 1 id, nombre, descripcion, precio FROM reposteria')
+            row = cursor.fetchone()
+            conn.close()
+            
+            if row:
+                return jsonify({
+                    'id': row[0],
+                    'nombre': row[1],
+                    'descripcion': row[2],
+                    'precio': float(row[3]) if row[3] else 0
+                })
+            return jsonify({'error': 'No hay repostería'}), 404
+        else:
+            # Usar SQLite como fallback
+            conn = get_db()
+            c = conn.cursor()
+            c.execute('SELECT id, nombre, descripcion, precio FROM reposteria ORDER BY id DESC LIMIT 1')
+            row = c.fetchone()
+            conn.close()
+            
+            if row:
+                return jsonify({
+                    'id': row[0],
+                    'nombre': row[1],
+                    'descripcion': row[2],
+                    'precio': float(row[3]) if row[3] else 0
+                })
+            return jsonify({'error': 'No hay repostería'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -187,14 +283,19 @@ def get_categorias():
     """Obtiene todas las categorías"""
     try:
         conn = get_db_connection()
-        if not conn:
-            return jsonify({'error': 'No hay conexión a la BD'}), 500
-        
-        cursor = conn.cursor()
-        cursor.execute('SELECT id, nombre FROM categoria')
-        categorias = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]
-        conn.close()
-        return jsonify(categorias)
+        if conn:
+            # Usar SQL Server
+            cursor = conn.cursor()
+            cursor.execute('SELECT id, nombre FROM categoria')
+            categorias = [{'id': row[0], 'nombre': row[1]} for row in cursor.fetchall()]
+            conn.close()
+            return jsonify(categorias)
+        else:
+            # Usar SQLite - retornar categorías por defecto
+            return jsonify([
+                {'id': 1, 'nombre': 'Batidos de Agua'},
+                {'id': 2, 'nombre': 'Batidos con Proteína'}
+            ])
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -256,11 +357,19 @@ def registro():
         c = conn.cursor()
         
         try:
+            # Guardar en tabla usuarios (para autenticación)
             c.execute('''INSERT INTO usuarios (nombre, email, password, telefono)
                         VALUES (?, ?, ?, ?)''',
                      (nombre, email, password_hash, telefono))
+            
+            # Guardar también en tabla contacto (como solicitó el usuario)
+            mensaje_registro = f'Registro de nuevo usuario: {nombre}'
+            c.execute('''INSERT INTO contacto (nombre, correo, telefono, mensaje)
+                        VALUES (?, ?, ?, ?)''',
+                     (nombre, email, telefono, mensaje_registro))
+            
+            # Commit solo si ambas operaciones tuvieron éxito
             conn.commit()
-            conn.close()
             
             return jsonify({
                 'mensaje': 'Registro exitoso',
@@ -270,9 +379,17 @@ def registro():
                     'telefono': telefono
                 }
             }), 201
-        except sqlite3.IntegrityError:
-            conn.close()
+        except sqlite3.IntegrityError as e:
+            # Rollback en caso de error
+            conn.rollback()
             return jsonify({'error': 'El email ya está registrado'}), 409
+        except Exception as e:
+            # Rollback para cualquier otro error
+            conn.rollback()
+            return jsonify({'error': f'Error al registrar: {str(e)}'}), 500
+        finally:
+            # Asegurar que la conexión se cierre siempre
+            conn.close()
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -386,6 +503,46 @@ def get_batidos_por_ingrediente(ingrediente):
         conn.close()
         
         return jsonify(batidos)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/reposteria/por-ingrediente/<ingrediente>', methods=['GET'])
+def get_reposteria_por_ingrediente(ingrediente):
+    try:
+        conn = get_db_connection()
+        if conn:
+            # Usar SQL Server
+            cursor = conn.cursor()
+            cursor.execute('SELECT id, nombre, descripcion, precio FROM reposteria WHERE nombre LIKE ? OR descripcion LIKE ?',
+                          (f'%{ingrediente}%', f'%{ingrediente}%'))
+            reposteria = []
+            for row in cursor.fetchall():
+                reposteria.append({
+                    'id': row[0],
+                    'nombre': row[1],
+                    'descripcion': row[2],
+                    'precio': float(row[3]) if row[3] else 0
+                })
+            conn.close()
+            return jsonify(reposteria)
+        else:
+            # Usar SQLite como fallback
+            conn = get_db()
+            c = conn.cursor()
+            # Buscar en nombre y descripción
+            c.execute('SELECT id, nombre, descripcion, precio FROM reposteria WHERE nombre LIKE ? OR descripcion LIKE ?', 
+                      (f'%{ingrediente}%', f'%{ingrediente}%'))
+            reposteria = []
+            for row in c.fetchall():
+                reposteria.append({
+                    'id': row[0],
+                    'nombre': row[1],
+                    'descripcion': row[2],
+                    'precio': float(row[3])
+                })
+            conn.close()
+            
+            return jsonify(reposteria)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

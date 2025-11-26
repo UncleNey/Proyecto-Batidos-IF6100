@@ -6,8 +6,8 @@
     </div>
     
     <nav class="nav-buttons">
-      <button class="nav-btn" [class.active]="seccionActiva === 'batidos'" (click)="seleccionarSeccion('batidos')">Batidos</button>
-      <button class="nav-btn" [class.active]="seccionActiva === 'reposteria'" (click)="seleccionarSeccion('reposteria')">Repostería</button>
+      <button class="nav-btn" [class.active]="seccionActiva === 'batidos' || seccionActiva === 'lista-batidos' || seccionActiva === 'detalle-batidos'" (click)="seleccionarSeccion('batidos')">Batidos</button>
+      <button class="nav-btn" [class.active]="seccionActiva === 'reposteria' || seccionActiva === 'lista-reposteria' || seccionActiva === 'detalle-reposteria'" (click)="seleccionarSeccion('reposteria')">Repostería</button>
       <button class="nav-btn" [class.active]="seccionActiva === 'ubicacion'" (click)="seleccionarSeccion('ubicacion')">Ubicación</button>
     </nav>
 
@@ -168,6 +168,50 @@
     <div class="productos-grid-detalle">
       <div class="producto-detalle-card" *ngFor="let producto of productosIngrediente">
         <div class="producto-imagen-detalle">{{ producto.imagen }}</div>
+        <div class="producto-info-detalle">
+          <h3>{{ producto.nombre }}</h3>
+          <p>{{ producto.descripcion }}</p>
+          <div class="producto-footer">
+            <span class="precio">${{ producto.precio }}</span>
+            <button class="btn-detalle">Ver detalle</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTA COMPLETA DE BATIDOS -->
+  <div class="lista-completa-container" *ngIf="seccionActiva === 'lista-batidos'">
+    <div class="lista-header">
+      <h2>🥤 Todos los Batidos</h2>
+      <button class="btn-volver-detalle" (click)="seleccionarSeccion('principal')">← Volver</button>
+    </div>
+    
+    <div class="productos-grid-detalle">
+      <div class="producto-detalle-card" *ngFor="let batido of batidosLista">
+        <div class="producto-imagen-detalle">🥤</div>
+        <div class="producto-info-detalle">
+          <h3>{{ batido.nombre }}</h3>
+          <p>{{ batido.descripcion }}</p>
+          <div class="producto-footer">
+            <span class="precio">${{ batido.precio }}</span>
+            <button class="btn-detalle">Ver detalle</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTA COMPLETA DE REPOSTERÍA -->
+  <div class="lista-completa-container" *ngIf="seccionActiva === 'lista-reposteria'">
+    <div class="lista-header">
+      <h2>🍰 Toda la Repostería</h2>
+      <button class="btn-volver-detalle" (click)="seleccionarSeccion('principal')">← Volver</button>
+    </div>
+    
+    <div class="productos-grid-detalle">
+      <div class="producto-detalle-card" *ngFor="let producto of repoteriaLista">
+        <div class="producto-imagen-detalle">🍰</div>
         <div class="producto-info-detalle">
           <h3>{{ producto.nombre }}</h3>
           <p>{{ producto.descripcion }}</p>

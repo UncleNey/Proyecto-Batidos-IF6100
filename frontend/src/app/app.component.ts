@@ -34,6 +34,21 @@ interface ProductoDetalle {
   descripcion: string;
 }
 
+interface BatidoDb {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  imagen?: string;
+}
+
+interface RepostoriaDb {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+}
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -183,6 +198,37 @@ export class AppComponent implements OnInit {
     this.cargarProductosPorFruta(fruta);
   }
 
+  batidosLista: BatidoDb[] = [];
+  repoteriaLista: RepostoriaDb[] = [];
+
+  cargarBatidosCompleto() {
+    this.http.get('http://127.0.0.1:5000/api/batidos').subscribe(
+      (data: any) => {
+        this.batidosLista = data;
+        this.seccionActiva = 'lista-batidos';
+      },
+      (error: any) => {
+        console.error('Error al cargar batidos:', error);
+        this.batidosLista = [];
+        this.seccionActiva = 'lista-batidos';
+      }
+    );
+  }
+
+  cargarReposteriaCompleto() {
+    this.http.get('http://127.0.0.1:5000/api/reposteria').subscribe(
+      (data: any) => {
+        this.repoteriaLista = data;
+        this.seccionActiva = 'lista-reposteria';
+      },
+      (error: any) => {
+        console.error('Error al cargar repostería:', error);
+        this.repoteriaLista = [];
+        this.seccionActiva = 'lista-reposteria';
+      }
+    );
+  }
+
   postres: Postre[] = [
     { id: 1, nombre: 'Chocolate', emoji: '🍫', descripcion: 'Torta de chocolate suave y húmeda' },
     { id: 2, nombre: 'Vainilla', emoji: '🧁', descripcion: 'Cupcake de vainilla clásico' },
@@ -234,15 +280,28 @@ export class AppComponent implements OnInit {
     this.ingredienteSeleccionado = postre;
     this.tipoProducto = 'reposteria';
     
-    // Simular productos con este postre (sin backend aún)
-    this.productosIngrediente = [
-      { id: 1, nombre: `Torta ${postre.nombre}`, precio: 12.00, imagen: '🍰', descripcion: `Torta de ${postre.nombre}` },
-      { id: 2, nombre: `Cupcake ${postre.nombre}`, precio: 3.50, imagen: '🧁', descripcion: `Cupcake de ${postre.nombre}` },
-      { id: 3, nombre: `Brownie ${postre.nombre}`, precio: 4.00, imagen: '🟫', descripcion: `Brownie de ${postre.nombre}` },
-      { id: 4, nombre: `Cheesecake ${postre.nombre}`, precio: 8.00, imagen: '🍰', descripcion: `Cheesecake de ${postre.nombre}` }
-    ];
-
-    this.seccionActiva = 'detalle-reposteria';
+    // Cargar del backend
+    this.http.get(`http://127.0.0.1:5000/api/reposteria/por-ingrediente/${postre.nombre}`).subscribe(
+      (data: any) => {
+        if (data && data.length > 0) {
+          this.productosIngrediente = data.map((producto: any) => ({
+            id: producto.id,
+            nombre: producto.nombre,
+            precio: producto.precio,
+            imagen: '🍰',
+            descripcion: producto.descripcion
+          }));
+        } else {
+          this.productosIngrediente = [];
+        }
+        this.seccionActiva = 'detalle-reposteria';
+      },
+      (error: any) => {
+        console.error('Error al cargar repostería:', error);
+        this.productosIngrediente = [];
+        this.seccionActiva = 'detalle-reposteria';
+      }
+    );
   }
 
   volverAProductos() {
