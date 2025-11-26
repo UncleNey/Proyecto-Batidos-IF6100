@@ -493,22 +493,40 @@ def get_batidos_por_ingrediente(ingrediente):
 @app.route('/api/reposteria/por-ingrediente/<ingrediente>', methods=['GET'])
 def get_reposteria_por_ingrediente(ingrediente):
     try:
-        conn = get_db()
-        c = conn.cursor()
-        # Buscar en nombre y descripción
-        c.execute('SELECT id, nombre, descripcion, precio FROM reposteria WHERE nombre LIKE ? OR descripcion LIKE ?', 
-                  (f'%{ingrediente}%', f'%{ingrediente}%'))
-        reposteria = []
-        for row in c.fetchall():
-            reposteria.append({
-                'id': row[0],
-                'nombre': row[1],
-                'descripcion': row[2],
-                'precio': float(row[3])
-            })
-        conn.close()
-        
-        return jsonify(reposteria)
+        conn = get_db_connection()
+        if conn:
+            # Usar SQL Server
+            cursor = conn.cursor()
+            cursor.execute('SELECT id, nombre, descripcion, precio FROM reposteria WHERE nombre LIKE ? OR descripcion LIKE ?',
+                          (f'%{ingrediente}%', f'%{ingrediente}%'))
+            reposteria = []
+            for row in cursor.fetchall():
+                reposteria.append({
+                    'id': row[0],
+                    'nombre': row[1],
+                    'descripcion': row[2],
+                    'precio': float(row[3]) if row[3] else 0
+                })
+            conn.close()
+            return jsonify(reposteria)
+        else:
+            # Usar SQLite como fallback
+            conn = get_db()
+            c = conn.cursor()
+            # Buscar en nombre y descripción
+            c.execute('SELECT id, nombre, descripcion, precio FROM reposteria WHERE nombre LIKE ? OR descripcion LIKE ?', 
+                      (f'%{ingrediente}%', f'%{ingrediente}%'))
+            reposteria = []
+            for row in c.fetchall():
+                reposteria.append({
+                    'id': row[0],
+                    'nombre': row[1],
+                    'descripcion': row[2],
+                    'precio': float(row[3])
+                })
+            conn.close()
+            
+            return jsonify(reposteria)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
