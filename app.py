@@ -50,11 +50,11 @@ def get_db_connection():
             conn_str_parts.append(f"PWD={PASSWORD}")
         
         conn_str = ";".join(conn_str_parts)
-        conn = pyodbc.connect(conn_str, timeout=2)
+        conn = pyodbc.connect(conn_str, timeout=5)
         return conn
     except Exception as e:
         # Si falla SQL Server, usar SQLite como fallback
-        print(f"SQL Server no disponible, usando SQLite: {e}")
+        # En producción, considerar usar logging module
         return None
 
 def init_db():

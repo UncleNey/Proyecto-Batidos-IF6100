@@ -34,6 +34,21 @@ interface ProductoDetalle {
   descripcion: string;
 }
 
+interface BatidoDb {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  imagen?: string;
+}
+
+interface RepostoriaDb {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+}
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -183,8 +198,8 @@ export class AppComponent implements OnInit {
     this.cargarProductosPorFruta(fruta);
   }
 
-  batidosLista: any[] = [];
-  repoteriaLista: any[] = [];
+  batidosLista: BatidoDb[] = [];
+  repoteriaLista: RepostoriaDb[] = [];
 
   cargarBatidosCompleto() {
     this.http.get('http://127.0.0.1:5000/api/batidos').subscribe(
