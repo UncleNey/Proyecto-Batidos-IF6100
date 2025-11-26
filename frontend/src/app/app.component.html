@@ -6,8 +6,8 @@
     </div>
     
     <nav class="nav-buttons">
-      <button class="nav-btn" [class.active]="seccionActiva === 'batidos' || seccionActiva === 'lista-batidos' || seccionActiva === 'detalle-batidos'" (click)="cargarBatidosCompleto()">Batidos</button>
-      <button class="nav-btn" [class.active]="seccionActiva === 'reposteria' || seccionActiva === 'lista-reposteria' || seccionActiva === 'detalle-reposteria'" (click)="cargarReposteriaCompleto()">Repostería</button>
+      <button class="nav-btn" [class.active]="seccionActiva === 'batidos' || seccionActiva === 'lista-batidos' || seccionActiva === 'detalle-batidos'" (click)="seleccionarSeccion('batidos')">Batidos</button>
+      <button class="nav-btn" [class.active]="seccionActiva === 'reposteria' || seccionActiva === 'lista-reposteria' || seccionActiva === 'detalle-reposteria'" (click)="seleccionarSeccion('reposteria')">Repostería</button>
       <button class="nav-btn" [class.active]="seccionActiva === 'ubicacion'" (click)="seleccionarSeccion('ubicacion')">Ubicación</button>
     </nav>
 

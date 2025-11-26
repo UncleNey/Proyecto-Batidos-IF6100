@@ -280,15 +280,28 @@ export class AppComponent implements OnInit {
     this.ingredienteSeleccionado = postre;
     this.tipoProducto = 'reposteria';
     
-    // Simular productos con este postre (sin backend aún)
-    this.productosIngrediente = [
-      { id: 1, nombre: `Torta ${postre.nombre}`, precio: 12.00, imagen: '🍰', descripcion: `Torta de ${postre.nombre}` },
-      { id: 2, nombre: `Cupcake ${postre.nombre}`, precio: 3.50, imagen: '🧁', descripcion: `Cupcake de ${postre.nombre}` },
-      { id: 3, nombre: `Brownie ${postre.nombre}`, precio: 4.00, imagen: '🟫', descripcion: `Brownie de ${postre.nombre}` },
-      { id: 4, nombre: `Cheesecake ${postre.nombre}`, precio: 8.00, imagen: '🍰', descripcion: `Cheesecake de ${postre.nombre}` }
-    ];
-
-    this.seccionActiva = 'detalle-reposteria';
+    // Cargar del backend
+    this.http.get(`http://127.0.0.1:5000/api/reposteria/por-ingrediente/${postre.nombre}`).subscribe(
+      (data: any) => {
+        if (data && data.length > 0) {
+          this.productosIngrediente = data.map((producto: any) => ({
+            id: producto.id,
+            nombre: producto.nombre,
+            precio: producto.precio,
+            imagen: '🍰',
+            descripcion: producto.descripcion
+          }));
+        } else {
+          this.productosIngrediente = [];
+        }
+        this.seccionActiva = 'detalle-reposteria';
+      },
+      (error: any) => {
+        console.error('Error al cargar repostería:', error);
+        this.productosIngrediente = [];
+        this.seccionActiva = 'detalle-reposteria';
+      }
+    );
   }
 
   volverAProductos() {
