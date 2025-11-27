@@ -19,7 +19,10 @@
   <!-- PRINCIPAL -->
   <div class="productos-container" *ngIf="seccionActiva === 'principal'">
     <div class="producto-card" *ngFor="let producto of productos">
-      <div class="producto-imagen">{{ producto.emoji }}</div>
+      <div class="producto-imagen" [ngClass]="{'imagen-real': producto.imagen && !producto.imagen.includes('emoji')}">
+        <img *ngIf="producto.imagen && !producto.imagen.includes('emoji')" [src]="producto.imagen" [alt]="producto.nombre" class="img-producto">
+        <span *ngIf="!producto.imagen || producto.imagen.includes('emoji')">{{ producto.emoji }}</span>
+      </div>
       <div class="producto-info">
         <h3>{{ producto.nombre }} {{ producto.emoji }}</h3>
         <p>{{ producto.descripcion }}</p>
@@ -37,7 +40,8 @@
     
     <div class="detalle-producto-content">
       <div class="detalle-imagen-grande">
-        <span class="emoji-detalle">{{ productoDetalleActual.emoji }}</span>
+        <img *ngIf="productoDetalleActual.imagen && !productoDetalleActual.imagen.includes('emoji')" [src]="productoDetalleActual.imagen" [alt]="productoDetalleActual.nombre" class="img-producto-detalle">
+        <span *ngIf="!productoDetalleActual.imagen || productoDetalleActual.imagen.includes('emoji')" class="emoji-detalle">{{ productoDetalleActual.emoji }}</span>
       </div>
       
       <div class="detalle-info">

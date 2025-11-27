@@ -3,7 +3,8 @@
 
   <div class="detalle-content">
     <div class="imagen-section">
-      <img [src]="batido.imagen || 'assets/placeholder.png'" [alt]="batido.nombre" class="batido-imagen">
+      <img *ngIf="batido.imagen" [src]="batido.imagen" [alt]="batido.nombre" class="batido-imagen">
+      <div *ngIf="!batido.imagen" class="imagen-placeholder">Sin imagen</div>
     </div>
 
     <div class="info-section">

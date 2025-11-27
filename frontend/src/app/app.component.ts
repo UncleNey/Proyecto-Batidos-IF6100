@@ -108,15 +108,15 @@ export class AppComponent implements OnInit {
             emoji: '🥤',
             tipo: 'Fresa-Banano-Avena-Proteína',
             descripcion: 'Nutritivo y cremoso',
-            imagen: 'assets/batido-fresa.png'
+            imagen: 'assets/Fresa-banano-avena-proteina.jpeg'
           },
           {
             id: 2,
             nombre: 'Repostería más vendida:',
             emoji: '🍰',
-            tipo: 'Chocolate',
+            tipo: 'Queque de banano con nueces',
             descripcion: 'Suave, húmedo y con ganache.',
-            imagen: 'assets/reposteria-chocolate.png'
+            imagen: 'assets/Queque de banano con nueces.jpeg'
           }
         ];
       }
@@ -278,7 +278,7 @@ export class AppComponent implements OnInit {
         // Repostería más vendida
         detalleCompleto = 'Se prepara utilizando bananos maduros, y se enriquece con nueces picadas, que aportan un toque crocante y un sabor tostado que complementa perfectamente la suavidad del banano.';
         ingredientes = ['Banano', 'Nueces', 'Harina', 'Huevos', 'Azúcar'];
-        precio = 900;
+        precio = 5.50;
       }
 
       this.productoDetalleActual = {

@@ -140,6 +140,18 @@ $border-color: #1a2f4a;
           background: radial-gradient(circle, rgba(0, 212, 255, 0.1), transparent);
           animation: pulse 4s ease-in-out infinite;
         }
+
+        &.imagen-real {
+          background: transparent;
+          padding: 1rem;
+
+          .img-producto {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0.8rem;
+          }
+        }
       }
 
       .producto-info {
@@ -885,6 +897,13 @@ $border-color: #1a2f4a;
           font-size: 200px;
           z-index: 1;
           animation: float 3s ease-in-out infinite;
+        }
+
+        .img-producto-detalle {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          z-index: 2;
         }
       }
 
